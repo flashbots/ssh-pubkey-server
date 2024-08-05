@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/flashbots/go-template/common"
+	"github.com/flashbots/ssh-pubkey-server/common"
 	"github.com/stretchr/testify/require"
 )
 

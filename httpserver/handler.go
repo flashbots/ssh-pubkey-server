@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/flashbots/go-template/metrics"
+	"github.com/flashbots/ssh-pubkey-server/metrics"
 )
 
 func (s *Server) handleAPI(w http.ResponseWriter, r *http.Request) {

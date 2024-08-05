@@ -1,4 +1,4 @@
-module github.com/flashbots/go-template
+module github.com/flashbots/ssh-pubkey-server
 
 go 1.21
 
