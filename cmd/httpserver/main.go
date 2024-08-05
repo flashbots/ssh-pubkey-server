@@ -99,7 +99,7 @@ func main() {
 				ReadTimeout:              60 * time.Second,
 				WriteTimeout:             30 * time.Second,
 
-				SshPubkeyPath: cCtx.String("ssh-pubkey-file"),
+				SSHPubkeyPath: cCtx.String("ssh-pubkey-file"),
 			}
 
 			srv, err := httpserver.New(cfg)

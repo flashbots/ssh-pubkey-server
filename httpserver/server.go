@@ -28,7 +28,7 @@ type HTTPServerConfig struct {
 	ReadTimeout              time.Duration
 	WriteTimeout             time.Duration
 
-	SshPubkeyPath string
+	SSHPubkeyPath string
 }
 
 type Server struct {
@@ -48,7 +48,7 @@ func New(cfg *HTTPServerConfig) (srv *Server, err error) {
 		return nil, err
 	}
 
-	sshPubkey, err := os.ReadFile(cfg.SshPubkeyPath)
+	sshPubkey, err := os.ReadFile(cfg.SSHPubkeyPath)
 	if err != nil {
 		return nil, err
 	}
