@@ -11,11 +11,6 @@ v:
 clean:
 	rm -rf build/
 
-.PHONY: build-cli
-build-cli:
-	@mkdir -p ./build
-	go build -trimpath -ldflags "-X github.com/flashbots/ssh-pubkey-server/common.Version=${VERSION}" -v -o ./build/cli cmd/cli/main.go
-
 .PHONY: build-httpserver
 build-httpserver:
 	@mkdir -p ./build
@@ -63,15 +58,6 @@ cover-html:
 	go test -coverprofile=/tmp/go-sim-lb.cover.tmp ./...
 	go tool cover -html=/tmp/go-sim-lb.cover.tmp
 	unlink /tmp/go-sim-lb.cover.tmp
-
-.PHONY: docker-cli
-docker-cli:
-	DOCKER_BUILDKIT=1 docker build \
-		--platform linux/amd64 \
-		--build-arg VERSION=${VERSION} \
-		--file cli.dockerfile \
-		--tag your-project \
-	.
 
 .PHONY: docker-httpserver
 docker-httpserver:

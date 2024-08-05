@@ -15,6 +15,11 @@ import (
 
 var flags []cli.Flag = []cli.Flag{
 	&cli.StringFlag{
+		Name:  "ssh-pubkey-file",
+		Value: "/etc/ssh/ssh_host_ed25519_key.pub",
+		Usage: "path to file containing pubkey to serve",
+	},
+	&cli.StringFlag{
 		Name:  "listen-addr",
 		Value: "127.0.0.1:8080",
 		Usage: "address to listen on for API",
@@ -93,6 +98,8 @@ func main() {
 				GracefulShutdownDuration: 30 * time.Second,
 				ReadTimeout:              60 * time.Second,
 				WriteTimeout:             30 * time.Second,
+
+				SSHPubkeyPath: cCtx.String("ssh-pubkey-file"),
 			}
 
 			srv, err := httpserver.New(cfg)

@@ -32,8 +32,21 @@ func Test_Handlers_Healthcheck_Drain_Undrain(t *testing.T) {
 		DrainDuration: latency,
 		ListenAddr:    listenAddr,
 		Log:           getTestLogger(),
+		SSHPubkeyPath: "./test_key.pub",
 	})
 	require.NoError(t, err)
+
+	{ // Check pubkey
+		req := httptest.NewRequest(http.MethodGet, "http://localhost"+listenAddr+"/pubkey", nil) //nolint:goconst,nolintlint
+		w := httptest.NewRecorder()
+		s.handleGetPubkey(w, req)
+		resp := w.Result()
+		defer resp.Body.Close()
+		data, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		require.Equal(t, data, []byte("ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFGGVd5nQewq0hETk2Tr/P7OZxTW/4aftdfh9/cAe7FC"))
+	}
 
 	{ // Check health
 		req := httptest.NewRequest(http.MethodGet, "http://localhost"+listenAddr+"/readyz", nil) //nolint:goconst,nolintlint

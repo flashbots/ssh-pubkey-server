@@ -7,7 +7,7 @@ import (
 	"github.com/flashbots/ssh-pubkey-server/metrics"
 )
 
-func (s *Server) handleAPI(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleGetPubkey(w http.ResponseWriter, r *http.Request) {
 	m := s.metricsSrv.Float64Histogram(
 		"request_duration_api",
 		"API request handling duration",
@@ -18,9 +18,10 @@ func (s *Server) handleAPI(w http.ResponseWriter, r *http.Request) {
 		m.Record(r.Context(), float64(time.Since(start).Microseconds()))
 	}(time.Now())
 
-	// do work
-
-	w.WriteHeader(http.StatusOK)
+	_, err := w.Write(s.sshPubkey)
+	if err != nil {
+		s.log.Error("could not serve pubkey", "err", err)
+	}
 }
 
 func (s *Server) handleLivenessCheck(w http.ResponseWriter, r *http.Request) {
