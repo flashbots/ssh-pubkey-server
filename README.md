@@ -3,39 +3,28 @@
 [![Goreport status](https://goreportcard.com/badge/github.com/flashbots/ssh-pubkey-server)](https://goreportcard.com/report/github.com/flashbots/go-template)
 [![Test status](https://github.com/flashbots/ssh-pubkey-server/workflows/Checks/badge.svg?branch=main)](https://github.com/flashbots/go-template/actions?query=workflow%3A%22Checks%22)
 
-Toolbox and building blocks for new Go projects, to get started quickly and right-footed!
-
-* [`Makefile`](https://github.com/flashbots/ssh-pubkey-server/blob/main/Makefile) with `lint`, `test`, `build`, `fmt` and more
-* Linting with `gofmt`, `gofumpt`, `go vet`, `staticcheck` and `golangci-lint`
-* Logging setup using the [slog logger](https://pkg.go.dev/golang.org/x/exp/slog) (with debug and json logging options)
-* [GitHub Workflows](.github/workflows/) for linting and testing, as well as releasing and publishing Docker images
-* Entry files for [CLI](/cmd/cli/main.go) and [HTTP server](/cmd/httpserver/main.go)
-* Webserver with
-  * Graceful shutdown, implementing `livez`, `readyz` and draining API handlers
-  * Prometheus metrics
-  * Using https://pkg.go.dev/github.com/go-chi/chi/v5 for routing
-  * [Urfave](https://cli.urfave.org/) for cli args
-* https://github.com/uber-go/nilaway
-* See also:
-  * Public project setup: https://github.com/flashbots/flashbots-repository-template
-  * Repository for common Go utilities: https://github.com/flashbots/go-utils
-
-Pick and choose whatever is useful to you! Don't feel the need to use everything, or even to follow this structure.
-
 ---
 
 ## Getting started
 
-**Build CLI**
+**Run CLI**
+
+The following will request server ssh pubkey through a proxy, and separately run ssh-keyscan and will return the matching server keys that you can then append to your known_hosts.  
 
 ```bash
-make build-cli
+./cmd/cli/add_to_known_hosts.sh <attested http proxy> <host ip> >> ~/.ssh/known_hosts
 ```
 
 **Build HTTP server**
 
 ```bash
 make build-httpserver
+```
+
+**Run pubkey server**
+
+```bash
+go run ./cmd/httpserver/main.go [--listen-addr=127.0.0.1:8080] [--ssh-pubkey-file=/etc/ssh/ssh_host_ed25519_key.pub]
 ```
 
 **Install dev dependencies**
