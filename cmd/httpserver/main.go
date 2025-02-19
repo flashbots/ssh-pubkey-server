@@ -26,7 +26,7 @@ var flags []cli.Flag = []cli.Flag{
 	},
 	&cli.StringFlag{
 		Name:  "metrics-addr",
-		Value: "127.0.0.1:8090",
+		Value: "",
 		Usage: "address to listen on for Prometheus metrics",
 	},
 	&cli.BoolFlag{
@@ -46,7 +46,7 @@ var flags []cli.Flag = []cli.Flag{
 	},
 	&cli.StringFlag{
 		Name:  "log-service",
-		Value: "your-project",
+		Value: "ssh-pubkey-server",
 		Usage: "add 'service' tag to logs",
 	},
 	&cli.BoolFlag{
