@@ -12,7 +12,7 @@ import (
 	"github.com/flashbots/go-utils/httplogger"
 	"github.com/flashbots/ssh-pubkey-server/common"
 	"github.com/flashbots/ssh-pubkey-server/metrics"
-	"github.com/go-chi/chi/v5"
+	chi "github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/atomic"
 )
