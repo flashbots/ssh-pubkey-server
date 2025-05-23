@@ -24,8 +24,10 @@ make build-httpserver
 **Run pubkey server**
 
 ```bash
-go run ./cmd/httpserver/main.go [--listen-addr=127.0.0.1:8080] [--ssh-pubkey-file=/etc/ssh/ssh_host_ed25519_key.pub]
+go run ./cmd/httpserver/main.go [--listen-addr=127.0.0.1:8080] [--host-ssh-pubkey-file=/etc/ssh/ssh_host_ed25519_key.pub] [--container-ssh-pubkey-file=/path/to/container_key.pub]
 ```
+
+The server will serve both pubkeys (if provided) at the `/pubkey` endpoint, separated by a newline. The `--container-ssh-pubkey-file` flag is optional.
 
 **Install dev dependencies**
 
