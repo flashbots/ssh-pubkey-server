@@ -10,7 +10,7 @@ import (
 	"github.com/flashbots/ssh-pubkey-server/common"
 	"github.com/flashbots/ssh-pubkey-server/httpserver"
 	"github.com/google/uuid"
-	"github.com/urfave/cli/v2" // imports as package "cli"
+	cli "github.com/urfave/cli/v2"
 )
 
 var flags []cli.Flag = []cli.Flag{

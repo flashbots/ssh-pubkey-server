@@ -10,23 +10,21 @@ linters:
     - gocritic
     - godot
     - godox
-    - gomnd
     - lll
+    - mnd
     - nestif
     - nilnil
     - nlreturn
     - noctx
     - nonamedreturns
-    - nosnakecase
     - paralleltest
     - revive
     - testpackage
+    - tenv
     - unparam
     - varnamelen
     - wrapcheck
     - wsl
-    - deadcode
-    - varcheck
     - exhaustruct
     - depguard
 
@@ -36,18 +34,7 @@ linters:
     - contextcheck
     - rowserrcheck
     - sqlclosecheck
-    - structcheck
     - wastedassign
-
-    #
-    # Disabled because deprecated:
-    #
-    - exhaustivestruct
-    - golint
-    - ifshort
-    - interfacer
-    - maligned
-    - scopelint
 
 linters-settings:
   #
