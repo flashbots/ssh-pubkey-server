@@ -15,9 +15,14 @@ import (
 
 var flags []cli.Flag = []cli.Flag{
 	&cli.StringFlag{
-		Name:  "ssh-pubkey-file",
+		Name:  "host-ssh-pubkey-file",
 		Value: "/etc/ssh/ssh_host_ed25519_key.pub",
-		Usage: "path to file containing pubkey to serve",
+		Usage: "path to file containing host pubkey to serve",
+	},
+	&cli.StringFlag{
+		Name:  "container-ssh-pubkey-file",
+		Value: "",
+		Usage: "path to file containing container pubkey to serve",
 	},
 	&cli.StringFlag{
 		Name:  "listen-addr",
@@ -99,7 +104,8 @@ func main() {
 				ReadTimeout:              60 * time.Second,
 				WriteTimeout:             30 * time.Second,
 
-				SSHPubkeyPath: cCtx.String("ssh-pubkey-file"),
+				HostSSHPubkeyPath:      cCtx.String("host-ssh-pubkey-file"),
+				ContainerSSHPubkeyPath: cCtx.String("container-ssh-pubkey-file"),
 			}
 
 			srv, err := httpserver.New(cfg)

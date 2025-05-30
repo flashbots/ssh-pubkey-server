@@ -28,7 +28,8 @@ type HTTPServerConfig struct {
 	ReadTimeout              time.Duration
 	WriteTimeout             time.Duration
 
-	SSHPubkeyPath string
+	HostSSHPubkeyPath      string
+	ContainerSSHPubkeyPath string
 }
 
 type Server struct {
@@ -36,10 +37,24 @@ type Server struct {
 	isReady atomic.Bool
 	log     *slog.Logger
 
-	sshPubkey []byte
+	sshPubkeys []byte
 
 	srv        *http.Server
 	metricsSrv *metrics.MetricsServer
+}
+
+func readAndFormatPubkey(path string) ([]byte, error) {
+	if path == "" {
+		return nil, nil
+	}
+
+	pubkey, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	// pubkey is in the form <type> <key> <host>. we want to drop the host
+	return bytes.Join(bytes.Fields(pubkey)[0:2], []byte(" ")), nil
 }
 
 func New(cfg *HTTPServerConfig) (srv *Server, err error) {
@@ -48,17 +63,29 @@ func New(cfg *HTTPServerConfig) (srv *Server, err error) {
 		return nil, err
 	}
 
-	sshPubkey, err := os.ReadFile(cfg.SSHPubkeyPath)
-	if err != nil {
+	var pubkeys [][]byte
+
+	// Read host pubkey
+	if hostPubkey, err := readAndFormatPubkey(cfg.HostSSHPubkeyPath); err != nil {
 		return nil, err
+	} else if hostPubkey != nil {
+		pubkeys = append(pubkeys, hostPubkey)
 	}
-	// pubkey is in the form <type> <key> <host>. we want to drop the host
-	sshPubkey = bytes.Join(bytes.Fields(sshPubkey)[0:2], []byte(" "))
+
+	// Read container pubkey
+	if containerPubkey, err := readAndFormatPubkey(cfg.ContainerSSHPubkeyPath); err != nil {
+		return nil, err
+	} else if containerPubkey != nil {
+		pubkeys = append(pubkeys, containerPubkey)
+	}
+
+	// Combine pubkeys with newline
+	combinedPubkeys := bytes.Join(pubkeys, []byte("\n"))
 
 	srv = &Server{
 		cfg:        cfg,
 		log:        cfg.Log,
-		sshPubkey:  sshPubkey,
+		sshPubkeys: combinedPubkeys,
 		srv:        nil,
 		metricsSrv: metricsSrv,
 	}
