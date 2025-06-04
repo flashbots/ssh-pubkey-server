@@ -18,7 +18,7 @@ func (s *Server) handleGetPubkey(w http.ResponseWriter, r *http.Request) {
 		m.Record(r.Context(), float64(time.Since(start).Microseconds()))
 	}(time.Now())
 
-	_, err := w.Write(s.sshPubkey)
+	_, err := w.Write(s.sshPubkeys)
 	if err != nil {
 		s.log.Error("could not serve pubkey", "err", err)
 	}
