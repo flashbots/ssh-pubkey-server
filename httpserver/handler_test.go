@@ -29,10 +29,10 @@ func Test_Handlers_Healthcheck_Drain_Undrain(t *testing.T) {
 
 	//nolint: exhaustruct
 	s, err := New(&HTTPServerConfig{
-		DrainDuration: latency,
-		ListenAddr:    listenAddr,
-		Log:           getTestLogger(),
-		SSHPubkeyPath: "./test_key.pub",
+		DrainDuration:  latency,
+		ListenAddr:     listenAddr,
+		Log:            getTestLogger(),
+		SSHPubkeyPaths: []string{"./test_key.pub", "./test_key.pub"},
 	})
 	require.NoError(t, err)
 
@@ -45,7 +45,10 @@ func Test_Handlers_Healthcheck_Drain_Undrain(t *testing.T) {
 		data, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
-		require.Equal(t, data, []byte("ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFGGVd5nQewq0hETk2Tr/P7OZxTW/4aftdfh9/cAe7FC"))
+		expectedKey := []byte("ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFGGVd5nQewq0hETk2Tr/P7OZxTW/4aftdfh9/cAe7FC")
+		expectedOutput := append(expectedKey, '\n')
+		expectedOutput = append(expectedOutput, expectedKey...)
+		require.Equal(t, expectedOutput, data)
 	}
 
 	{ // Check health

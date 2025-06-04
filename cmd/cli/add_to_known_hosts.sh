@@ -8,5 +8,11 @@ if [ $1 = "-h" ]; then
 	exit 0;
 fi
 
-pubkey=`curl -s $1/pubkey`
-ssh-keyscan -H "$2" 2>/dev/null | grep "${pubkey}"
+pubkeys=`curl -s $1/pubkey`
+host_keys=`ssh-keyscan -H "$2" 2>/dev/null; ssh-keyscan -H -p 10022 "$2" 2>/dev/null`
+
+echo "$pubkeys" | while IFS= read -r pubkey; do
+	if [ -n "$pubkey" ]; then
+		echo "$host_keys" | grep "${pubkey}"
+	fi
+done
