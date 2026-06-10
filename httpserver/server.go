@@ -77,11 +77,7 @@ func New(cfg *HTTPServerConfig) (srv *Server, err error) {
 	srv.isReady.Swap(true)
 
 	mux := chi.NewRouter()
-	// Pubkey files are read lazily per request (see handler.go) so that keys
-	// which only become available after the server starts — e.g. a key behind
-	// an encrypted disk that is unlocked later — are served as soon as they
-	// appear, without a restart. /pubkey returns whatever subset is currently
-	// available; missing files are skipped.
+
 	mux.With(srv.httpLogger).Get("/pubkey", srv.handleGetPubkey) // Never serve at `/` (root) path
 	mux.With(srv.httpLogger).Get("/livez", srv.handleLivenessCheck)
 	mux.With(srv.httpLogger).Get("/readyz", srv.handleReadinessCheck)
