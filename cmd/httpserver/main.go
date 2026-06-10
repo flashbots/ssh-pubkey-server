@@ -17,7 +17,7 @@ var flags []cli.Flag = []cli.Flag{
 	&cli.StringSliceFlag{
 		Name:  "ssh-pubkey-file",
 		Value: cli.NewStringSlice("/etc/ssh/ssh_host_ed25519_key.pub"),
-		Usage: "path to file containing pubkey to serve (can be specified multiple times)",
+		Usage: "path to file containing pubkey to serve (read on each request, missing files are skipped, can be specified multiple times)",
 	},
 	&cli.StringFlag{
 		Name:  "listen-addr",

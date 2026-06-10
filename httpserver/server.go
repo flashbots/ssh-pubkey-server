@@ -36,11 +36,11 @@ type Server struct {
 	isReady atomic.Bool
 	log     *slog.Logger
 
-	sshPubkeys []byte
-
 	srv        *http.Server
 	metricsSrv *metrics.MetricsServer
 }
+
+var errMalformedPubkey = errors.New("malformed pubkey: want at least 2 fields")
 
 func readAndFormatPubkey(path string) ([]byte, error) {
 	if path == "" {
@@ -52,8 +52,14 @@ func readAndFormatPubkey(path string) ([]byte, error) {
 		return nil, err
 	}
 
-	// pubkey is in the form <type> <key> <host>. we want to drop the host
-	return bytes.Join(bytes.Fields(pubkey)[0:2], []byte(" ")), nil
+	// pubkey is in the form <type> <key> <host>. we want to drop the host.
+	// A file may be empty or half-written (e.g. while the container is writing
+	// its host key), so guard against fewer than two fields rather than panic.
+	fields := bytes.Fields(pubkey)
+	if len(fields) < 2 {
+		return nil, errMalformedPubkey
+	}
+	return bytes.Join(fields[0:2], []byte(" ")), nil
 }
 
 func New(cfg *HTTPServerConfig) (srv *Server, err error) {
@@ -62,29 +68,20 @@ func New(cfg *HTTPServerConfig) (srv *Server, err error) {
 		return nil, err
 	}
 
-	var pubkeys [][]byte
-
-	// Read all specified pubkey files
-	for _, path := range cfg.SSHPubkeyPaths {
-		if pubkey, err := readAndFormatPubkey(path); err != nil {
-			return nil, err
-		} else if pubkey != nil {
-			pubkeys = append(pubkeys, pubkey)
-		}
-	}
-
-	combinedPubkeys := bytes.Join(pubkeys, []byte("\n"))
-
 	srv = &Server{
 		cfg:        cfg,
 		log:        cfg.Log,
-		sshPubkeys: combinedPubkeys,
 		srv:        nil,
 		metricsSrv: metricsSrv,
 	}
 	srv.isReady.Swap(true)
 
 	mux := chi.NewRouter()
+	// Pubkey files are read lazily per request (see handler.go) so that keys
+	// which only become available after the server starts — e.g. a key behind
+	// an encrypted disk that is unlocked later — are served as soon as they
+	// appear, without a restart. /pubkey returns whatever subset is currently
+	// available; missing files are skipped.
 	mux.With(srv.httpLogger).Get("/pubkey", srv.handleGetPubkey) // Never serve at `/` (root) path
 	mux.With(srv.httpLogger).Get("/livez", srv.handleLivenessCheck)
 	mux.With(srv.httpLogger).Get("/readyz", srv.handleReadinessCheck)

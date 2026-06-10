@@ -27,7 +27,9 @@ make build-httpserver
 go run ./cmd/httpserver/main.go [--listen-addr=127.0.0.1:8080] [--ssh-pubkey-file=/etc/ssh/ssh_host_ed25519_key.pub] [--ssh-pubkey-file=/path/to/container_key.pub]
 ```
 
-You can specify multiple `--ssh-pubkey-file` flags to serve multiple public keys. The server will serve all pubkeys at the `/pubkey` endpoint, separated by newlines.
+You can specify multiple `--ssh-pubkey-file` flags to serve multiple public keys. The server serves all currently-available pubkeys at the `/pubkey` endpoint, separated by newlines.
+
+Pubkey files are read lazily on each request, so a key that only becomes available after the server starts (for example a key generated once an encrypted disk is unlocked) is served as soon as it appears, with no restart. A file that is missing or not yet readable is simply skipped. If no key is available yet, `/pubkey` responds with `503 Service Unavailable`.
 
 **Install dev dependencies**
 
